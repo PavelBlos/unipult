@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UNIPULT — Панель Управления Роботом</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Шапка панели управления -->
+    <header>
+        <div class="logo-section">
+            <h1>UNIPULT</h1>
+            <span>ВЕБ-ТЕРМИНАЛ УПРАВЛЕНИЯ РОБОТОМ</span>
+        </div>
+        
+        <div class="status-bar">
+            <!-- Переключатель темы -->
+            <button id="theme-toggle" class="btn" style="background: transparent; border: 1px solid var(--card-border); padding: 0.4rem 0.8rem; font-size: 1.1rem; border-radius: 20px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                <span id="theme-icon">🌙</span>
+            </button>
+
+            <!-- Соединение -->
+            <div class="status-item">
+                <div id="conn-indicator" class="status-indicator disconnected"></div>
+                <span id="conn-text">ОФФЛАЙН</span>
+            </div>
+            
+            <!-- Батарея -->
+            <div class="status-item">
+                <span class="battery-icon">🔋</span>
+                <span id="battery-value">--.- В</span>
+                <span id="battery-percent" style="color: var(--text-secondary); font-weight: 600; margin-left: 4px;">(--%)</span>
+            </div>
+            
+            <!-- Состояние робота -->
+            <div class="status-item">
+                <span>СОСТОЯНИЕ:</span>
+                <span id="robot-state">НЕИЗВЕСТНО</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной рабочий стол (Сетка) -->
+    <main class="dashboard">
+        
+        <!-- Левая колонка: Телеметрия и Джойстик -->
+        <section class="panel">
+            <div class="panel-title">БОРТОВОЙ КОНТРОЛЬ</div>
+            
+            <!-- Экстренная кнопка (E-STOP) -->
+            <button id="estop-btn" class="estop-button">E-STOP</button>
+            
+            <!-- Управление режимами -->
+            <div class="action-buttons">
+                <button id="auto-start-btn" class="btn btn-success">▶ СТАРТ АВТО</button>
+                <button id="auto-stop-btn" class="btn btn-warning">⏸ СТОП АВТО</button>
+            </div>
+            
+            <!-- Цифровые показания (Телеметрия) -->
+            <div class="telemetry-grid">
+                <div class="telemetry-card">
+                    <span class="telemetry-label">Позиция X</span>
+                    <span id="tele-x" class="telemetry-value">0.00</span>
+                </div>
+                <div class="telemetry-card">
+                    <span class="telemetry-label">Позиция Y</span>
+                    <span id="tele-y" class="telemetry-value">0.00</span>
+                </div>
+                <div class="telemetry-card">
+                    <span class="telemetry-label">Высота Z</span>
+                    <span id="tele-z" class="telemetry-value">0.00</span>
+                </div>
+                <div class="telemetry-card">
+                    <span class="telemetry-label">Курс (Yaw)</span>
+                    <span id="tele-yaw" class="telemetry-value">0.0°</span>
+                </div>
+                <div class="telemetry-card">
+                    <span class="telemetry-label">Крен (Roll)</span>
+                    <span id="tele-roll" class="telemetry-value">0.0°</span>
+                </div>
+                <div class="telemetry-card">
+                    <span class="telemetry-label">Тангаж (Pitch)</span>
+                    <span id="tele-pitch" class="telemetry-value">0.0°</span>
+                </div>
+            </div>
+            
+            <!-- Сенсорный джойстик -->
+            <div class="panel joystick-panel">
+                <div class="telemetry-label">Ручное управление</div>
+                <div id="joystick-zone" class="joystick-zone"></div>
+                <div id="joystick-coords" class="joystick-coords">X: 0.00 | Y: 0.00</div>
+            </div>
+        </section>
+
+        <!-- Правая колонка: Карта + Списки -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Интерактивная карта -->
+            <section class="panel">
+                <div class="panel-title">
+                    <span>ИНТЕРАКТИВНАЯ КАРТА НАВИГАЦИИ</span>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="resetMap()" title="Сбросить вид">🏠</button>
+                        <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="zoomMap(1.2)">🔍 +</button>
+                        <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="zoomMap(0.8)">🔍 -</button>
+                        <button class="btn btn-danger-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="clearTrail()">🗑 Очистить след</button>
+                    </div>
+                </div>
+                <div class="map-wrapper">
+                    <canvas id="nav-map" style="display: block; width: 100%; height: 350px; cursor: move;"></canvas>
+                    <div class="map-instructions">
+                        Клик: точка | СКМ / ПКМ / Shift+ЛКМ: перемещение | Колесико: зум
+                    </div>
+                </div>
+            </section>
+
+            <!-- Списки координат (Вкладки) -->
+            <section class="panel">
+                <div class="tabs-header">
+                <button class="tab-link active" onclick="openTab(event, 'aruco-tab')">МЕТКИ ARUCO</button>
+                <button class="tab-link" onclick="openTab(event, 'waypoints-tab')">ТОЧКИ ТРАЕКТОРИИ (WAYPOINTS)</button>
+            </div>
+            
+            <!-- ================= ВКЛАДКА ARUCO ================= -->
+            <div id="aruco-tab" class="tab-content active">
+                <div class="editor-controls">
+                    <h3>Мировые координаты меток Aruco</h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-primary" onclick="document.getElementById('aruco-import-file').click()">📂 Импорт JSON</button>
+                        <input type="file" id="aruco-import-file" style="display: none;" accept=".json" onchange="importData(event, 'aruco')">
+                        <button class="btn btn-primary" onclick="exportData('aruco')">💾 Экспорт JSON</button>
+                    </div>
+                </div>
+                
+                <!-- Форма добавления новой метки -->
+                <div class="form-card">
+                    <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--accent-primary);">Добавить новую метку</h4>
+                    <div class="form-grid">
+                        <div class="form-field form-field-span-3">
+                            <label>ID метки (Tag ID)</label>
+                            <input type="number" id="aruco-form-tag" class="text-input-field" placeholder="Например, 42" required>
+                        </div>
+                        <div class="form-field">
+                            <label>Координата X (м)</label>
+                            <input type="number" step="0.01" id="aruco-form-x" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Координата Y (м)</label>
+                            <input type="number" step="0.01" id="aruco-form-y" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Координата Z (м)</label>
+                            <input type="number" step="0.01" id="aruco-form-z" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Крен (Roll, °)</label>
+                            <input type="number" step="0.1" id="aruco-form-roll" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Тангаж (Pitch, °)</label>
+                            <input type="number" step="0.1" id="aruco-form-pitch" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Курс (Yaw, °)</label>
+                            <input type="number" step="0.1" id="aruco-form-yaw" class="text-input-field" placeholder="0.0">
+                        </div>
+                    </div>
+                    <button class="btn btn-success" style="padding: 0.5rem;" onclick="addArucoMarker()">➕ Добавить метку</button>
+                </div>
+
+                <!-- Таблица меток -->
+                <div class="table-container">
+                    <table id="aruco-table">
+                        <thead>
+                            <tr>
+                                <th>Tag ID</th>
+                                <th>X (м)</th>
+                                <th>Y (м)</th>
+                                <th>Z (м)</th>
+                                <th>Roll (°)</th>
+                                <th>Pitch (°)</th>
+                                <th>Yaw (°)</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Заполняется динамически через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= ВКЛАДКА WAYPOINTS ================= -->
+            <div id="waypoints-tab" class="tab-content">
+                <div class="editor-controls">
+                    <h3>Список точек маршрута</h3>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-danger-outline" onclick="clearWaypoints()">🗑 Удалить все</button>
+                        <button class="btn btn-primary" onclick="document.getElementById('wp-import-file').click()">📂 Импорт JSON</button>
+                        <input type="file" id="wp-import-file" style="display: none;" accept=".json" onchange="importData(event, 'waypoints')">
+                        <button class="btn btn-primary" onclick="exportData('waypoints')">💾 Экспорт JSON</button>
+                        <button id="send-route-btn" class="btn btn-success">🚀 ОТПРАВИТЬ НА РОБОТА</button>
+                    </div>
+                </div>
+
+                <!-- Форма добавления новой точки -->
+                <div class="form-card">
+                    <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--accent-primary);">Добавить точку маршрута</h4>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>Координата X (м)</label>
+                            <input type="number" step="0.01" id="wp-form-x" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Координата Y (м)</label>
+                            <input type="number" step="0.01" id="wp-form-y" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Координата Z (м)</label>
+                            <input type="number" step="0.01" id="wp-form-z" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Крен (Roll, °)</label>
+                            <input type="number" step="0.1" id="wp-form-roll" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Тангаж (Pitch, °)</label>
+                            <input type="number" step="0.1" id="wp-form-pitch" class="text-input-field" placeholder="0.0">
+                        </div>
+                        <div class="form-field">
+                            <label>Курс (Yaw, °)</label>
+                            <input type="number" step="0.1" id="wp-form-yaw" class="text-input-field" placeholder="0.0">
+                        </div>
+                    </div>
+                    <button class="btn btn-success" style="padding: 0.5rem;" onclick="addWaypoint()">➕ Добавить точку</button>
+                </div>
+
+                <!-- Таблица точек траектории -->
+                <div class="table-container">
+                    <table id="waypoints-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>X (м)</th>
+                                <th>Y (м)</th>
+                                <th>Z (м)</th>
+                                <th>Roll (°)</th>
+                                <th>Pitch (°)</th>
+                                <th>Yaw (°)</th>
+                                <th>Порядок</th>
+                                <th>Удалить</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Заполняется динамически через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            </section>
+        </div>
+    </main>
+
+    <!-- Скрипты (Библиотека джойстика + Логика клиента) -->
+    <script src="/static/js/nipplejs.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

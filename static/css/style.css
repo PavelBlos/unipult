@@ -1,0 +1,618 @@
+/* UNIPULT Stylesheet - Premium Responsive Glassmorphism Design */
+
+:root {
+    /* Dark Theme Variables (Default) */
+    --bg-color: #080b11;
+    --card-bg: rgba(17, 24, 39, 0.65);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    
+    /* Accents */
+    --accent-primary: #6366f1; /* Indigo */
+    --accent-primary-hover: #4f46e5;
+    --accent-success: #10b981; /* Emerald */
+    --accent-success-hover: #059669;
+    --accent-danger: #ef4444; /* Neon Red */
+    --accent-danger-hover: #dc2626;
+    --accent-warning: #f59e0b; /* Amber */
+    --accent-warning-hover: #d97706;
+    
+    /* Glows */
+    --glow-primary: rgba(99, 102, 241, 0.3);
+    --glow-danger: rgba(239, 68, 68, 0.4);
+    --glow-success: rgba(16, 185, 129, 0.3);
+    
+    /* Custom Element Backgrounds for Dark Theme */
+    --input-bg: rgba(255, 255, 255, 0.05);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --table-header-bg: rgba(255, 255, 255, 0.03);
+    --table-hover: rgba(255, 255, 255, 0.02);
+    --telemetry-card-bg: rgba(255, 255, 255, 0.02);
+    --form-card-bg: rgba(255, 255, 255, 0.02);
+
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --border-radius: 16px;
+    --transition-speed: 0.3s;
+}
+
+/* Light Theme Override Variables */
+body.light-theme {
+    --bg-color: #f3f4f6;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(0, 0, 0, 0.08);
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    
+    /* Accents */
+    --accent-primary: #4f46e5; /* Indigo slightly darker for high contrast */
+    --accent-primary-hover: #3730a3;
+    --accent-success: #059669; /* Emerald slightly darker */
+    --accent-success-hover: #047857;
+    --accent-danger: #dc2626; /* Deep Red */
+    --accent-danger-hover: #b91c1c;
+    --accent-warning: #ea580c; /* Warm Amber */
+    --accent-warning-hover: #c2410c;
+    
+    /* Glows */
+    --glow-primary: rgba(79, 70, 229, 0.12);
+    --glow-danger: rgba(220, 38, 38, 0.15);
+    --glow-success: rgba(5, 150, 105, 0.12);
+    
+    /* Custom Element Backgrounds for Light Theme */
+    --input-bg: rgba(0, 0, 0, 0.04);
+    --input-border: rgba(0, 0, 0, 0.08);
+    --table-header-bg: rgba(0, 0, 0, 0.03);
+    --table-hover: rgba(0, 0, 0, 0.015);
+    --telemetry-card-bg: rgba(0, 0, 0, 0.015);
+    --form-card-bg: rgba(0, 0, 0, 0.015);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Global Transition for Theme Morphing */
+body, header, .panel, .telemetry-card, .form-card, .btn, input, th, td, tr, .status-item, .status-bar, .joystick-zone {
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* Header Styling */
+header {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--card-border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo-section h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    background: linear-gradient(to right, #8b5cf6, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.logo-section span {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.status-bar {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--input-bg);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid var(--input-border);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--text-secondary);
+}
+
+.status-indicator.connected {
+    background-color: var(--accent-success);
+    box-shadow: 0 0 8px var(--accent-success);
+}
+
+.status-indicator.disconnected {
+    background-color: var(--accent-danger);
+    box-shadow: 0 0 8px var(--accent-danger);
+}
+
+#robot-state {
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+#robot-state.e-stop {
+    color: var(--accent-danger);
+    animation: text-pulse 1s infinite alternate;
+}
+
+/* Main Layout Grid */
+.dashboard {
+    max-width: 1400px;
+    width: 100%;
+    margin: 1.5rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    flex-grow: 1;
+}
+
+@media (min-width: 968px) {
+    .dashboard {
+        grid-template-columns: 380px 1fr;
+    }
+}
+
+/* Glassmorphic Card Panel */
+.panel {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.panel-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Telemetry Card Styling */
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.telemetry-card {
+    background: var(--telemetry-card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.telemetry-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.telemetry-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: var(--text-primary);
+}
+
+/* Control Buttons and Joystick */
+.control-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.estop-button {
+    background: linear-gradient(135deg, var(--accent-danger), #b91c1c);
+    border: none;
+    border-radius: var(--border-radius);
+    color: white;
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: 0.05em;
+    padding: 1.25rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px var(--glow-danger);
+    text-align: center;
+    user-select: none;
+}
+
+.estop-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(239, 68, 68, 0.5);
+}
+
+.estop-button:active {
+    transform: translateY(1px);
+}
+
+.estop-button.active {
+    animation: estop-flash 0.5s infinite alternate;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.btn {
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    user-select: none;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--accent-success), #047857);
+    box-shadow: 0 4px 12px var(--glow-success);
+}
+.btn-success:hover {
+    background: linear-gradient(135deg, var(--accent-success-hover), #065f46);
+    transform: translateY(-1px);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--accent-warning), #c2410c);
+}
+.btn-warning:hover {
+    background: linear-gradient(135deg, var(--accent-warning-hover), #9a3412);
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-primary), #4338ca);
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--accent-primary-hover), #3730a3);
+}
+
+.btn-danger-outline {
+    background: transparent;
+    border: 1px solid var(--accent-danger);
+    color: var(--accent-danger);
+}
+.btn-danger-outline:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* Virtual Joystick Area */
+.joystick-panel {
+    align-items: center;
+}
+
+.joystick-zone {
+    width: 200px;
+    height: 200px;
+    background: var(--input-bg);
+    border: 2px dashed var(--input-border);
+    border-radius: 50%;
+    position: relative;
+    touch-action: none;
+    margin: 1rem 0;
+}
+
+/* NippleJS Joystick Styling Override to match active theme */
+.joystick-zone .back {
+    background: var(--glow-primary) !important;
+    border: 2px solid var(--accent-primary) !important;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed) !important;
+}
+
+.joystick-zone .front {
+    background: var(--accent-primary) !important;
+    box-shadow: 0 4px 12px var(--glow-primary) !important;
+    transition: background-color var(--transition-speed), box-shadow var(--transition-speed) !important;
+}
+
+.joystick-coords {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Interactive Map Styling */
+.map-wrapper {
+    position: relative;
+    width: 100%;
+    background: var(--bg-color);
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+body.light-theme .map-wrapper {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.map-instructions {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    line-height: 1.3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Tabs System */
+.tabs-header {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0px;
+}
+
+.tab-link {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-link:hover {
+    color: var(--text-primary);
+}
+
+.tab-link.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+    text-shadow: 0 0 10px var(--glow-primary);
+}
+
+.tab-content {
+    display: none;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 1rem;
+    flex-grow: 1;
+}
+
+.tab-content.active {
+    display: flex;
+}
+
+/* Forms and Table Layouts */
+.editor-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    background: rgba(0, 0, 0, 0.08);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+th, td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--card-border);
+}
+
+th {
+    background: var(--table-header-bg);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+tr:hover {
+    background: var(--table-hover);
+}
+
+/* Inline Inputs in Tables */
+.coords-input {
+    width: 60px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-family: monospace;
+    font-size: 0.85rem;
+    padding: 0.2rem 0.4rem;
+    text-align: center;
+}
+
+.coords-input:focus {
+    border-color: var(--accent-primary);
+    outline: none;
+    background: var(--input-bg);
+}
+
+.text-input-field {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+.text-input-field:focus {
+    border-color: var(--accent-primary);
+    outline: none;
+}
+
+/* Modal Form styling (for adding items) */
+.form-card {
+    background: var(--form-card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.form-field-span-3 {
+    grid-column: span 3;
+}
+
+.form-field label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+/* Helper styles */
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.2rem;
+}
+
+.icon-btn:hover {
+    color: var(--text-primary);
+}
+
+.icon-btn.delete:hover {
+    color: var(--accent-danger);
+}
+
+/* Keyframe Animations */
+@keyframes estop-flash {
+    0% {
+        background: #ef4444;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+    }
+    100% {
+        background: #991b1b;
+        box-shadow: 0 0 25px rgba(239, 68, 68, 0.8);
+    }
+}
+
+@keyframes text-pulse {
+    0% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+        text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+}
+
+/* Scrollbar Customization */
+.table-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.table-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+.table-container::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 3px;
+}
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(128, 128, 128, 0.3);
+}
