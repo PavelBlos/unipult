@@ -329,3 +329,53 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ```
+
+---
+
+## 5. Physical Robot Integration Blueprint (Arduino & RPi 5)
+
+This section outlines standard hardware implementation details developed for Raspberry Pi 5 connected to an Arduino Nano over UART, utilizing a Waveshare UPS HAT (E) for power.
+
+### 5.1 Arduino Nano: Steering Rate Limiter & Watchdog
+To prevent current spikes from stalling the Arduino Nano and to ensure safety, implement a watchdog and a rate limiter:
+
+*   **Watchdog (400ms)**: Stop motors and center steering if no valid serial command is parsed for over 400ms.
+*   **Servo Rate Limiter**: Smoothly step the physical servo angle toward the target angle at a maximum rate of **45 degrees per second** (calculated using a delta time `dt` in milliseconds inside the main `loop`).
+
+### 5.2 Python: Continuous Heartbeat Streaming (10Hz)
+Since the Arduino implements a safety timeout, the Pi's script must stream the target speeds/angles continuously in the main thread at **10Hz (every 100ms)**, even when the joystick is stationary:
+- Browser joystick movement only updates the local target state on the Pi.
+- The main thread loops constantly, sending the current targets to feed the watchdog.
+- **Safety Fallback**: If no clients are connected (`not panel.active_connections`), reset target speed to 0 immediately.
+- **Clean Exit on E-STOP**: On E-STOP event, write stop command `(0, F, 0)`, wait 500ms, and exit the script with exit code `0` (`os._exit(0)`).
+
+### 5.3 Python: Waveshare UPS HAT (E) Battery Telemetry (I2C)
+Read battery status directly from the UPS HAT's I2C registers to transmit to the dashboard:
+- **I2C Address**: `0x2D`
+- **Register**: `0x20` (Read block of 12 bytes)
+  - `voltage_v = (data[0] | (data[1] << 8)) / 1000.0`
+  - `percent = data[4] | (data[5] << 8)`
+
+### 5.4 systemd Service Configuration (`unipult.service`)
+Configure a daemon to run the script after Wi-Fi is connected:
+- **Service file** (`/etc/systemd/system/unipult.service`):
+  ```ini
+  [Unit]
+  Description=UNIPULT Robot Control Panel Pilot
+  After=network-online.target
+  Wants=network-online.target
+
+  [Service]
+  Type=simple
+  User=pi
+  WorkingDirectory=/home/pi/git/vo_realtime
+  ExecStart=/home/pi/git/vo_realtime/venv/bin/python3 -u unipult_pilot.py
+  Restart=on-failure
+  RestartSec=5
+  StandardOutput=journal
+  StandardError=journal
+
+  [Install]
+  WantedBy=multi-user.target
+  ```
+- Use `Restart=on-failure` combined with `os._exit(0)` on E-STOP so the service remains stopped after an E-STOP event but starts automatically on a new reboot.
